@@ -9,9 +9,8 @@ pipeline {
     stages {
         stage('Build Maven') {
             steps {
-                checkout scmGit(branches: [[name: "*/main"]],
-                    extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/martinex453/TingesoBackend.git']])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']],
+                          userRemoteConfigs: [[url: 'https://github.com/martinex453/TingesoBackend.git']]])
                 bat 'mvn clean package'
             }
         }
