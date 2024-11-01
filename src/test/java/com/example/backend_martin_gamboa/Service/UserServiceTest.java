@@ -34,6 +34,7 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Given
         MockitoAnnotations.openMocks(this); // Inicializa los mocks
         user = new UserEntity();
         user.setId(1L);
@@ -51,12 +52,11 @@ public class UserServiceTest {
 
     @Test
     void whenSaveUser_thenSuccess() {
-        // Given
+        // When
         when(userRepository.findByEmail(user.getEmail())).thenReturn(null);
         when(userRepository.findByRut(user.getRut())).thenReturn(null);
         when(userRepository.save(any(UserEntity.class))).thenReturn(user);
 
-        // When
         UserEntity savedUser = userService.saveUser(user);
 
         // Then
@@ -66,10 +66,9 @@ public class UserServiceTest {
 
     @Test
     void whenSaveExistingUser_thenReturnNull() {
-        // Given
+        // When
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
 
-        // When
         UserEntity savedUser = userService.saveUser(user);
 
         // Then
@@ -79,10 +78,9 @@ public class UserServiceTest {
 
     @Test
     void whenGetUserById_thenReturnUser() {
-        // Given
+        // When
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        // When
         UserEntity foundUser = userService.getUserById(user.getId());
 
         // Then
@@ -91,10 +89,9 @@ public class UserServiceTest {
 
     @Test
     void whenGetUserByEmail_thenReturnUser() {
-        // Given
+        // When
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
 
-        // When
         UserEntity foundUser = userService.getUserByEmail(user.getEmail());
 
         // Then
@@ -103,10 +100,9 @@ public class UserServiceTest {
 
     @Test
     void whenDeleteUser_thenReturnTrue() throws Exception {
-        // Given
+        // When
         doNothing().when(userRepository).deleteById(user.getId());
 
-        // When
         boolean result = userService.deleteUser(user.getId());
 
         // Then
@@ -116,10 +112,9 @@ public class UserServiceTest {
 
     @Test
     void whenLoginWithValidCredentials_thenReturnUserId() {
-        // Given
+        // When
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
 
-        // When
         Long userId = userService.login(user.getEmail(), user.getPassword());
 
         // Then
@@ -128,10 +123,9 @@ public class UserServiceTest {
 
     @Test
     void whenLoginWithInvalidEmail_thenReturnZero() {
-        // Given
+        // When
         when(userRepository.findByEmail("invalid@example.com")).thenReturn(null);
 
-        // When
         Long userId = userService.login("invalid@example.com", user.getPassword());
 
         // Then
@@ -140,10 +134,9 @@ public class UserServiceTest {
 
     @Test
     void whenLoginWithInvalidPassword_thenReturnZero() {
-        // Given
+        // When
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
 
-        // When
         Long userId = userService.login(user.getEmail(), "wrongpassword");
 
         // Then
@@ -152,10 +145,9 @@ public class UserServiceTest {
 
     @Test
     void whenUserAgeIsRequested_thenReturnCorrectAge() {
-        // Given
+        // When
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        // When
         Integer age = userService.userAge(user.getId());
 
         // Then
@@ -200,10 +192,9 @@ public class UserServiceTest {
 
     @Test
     void whenGetUserByPhone_thenReturnUser() {
-        // Given
+        // When
         when(userRepository.findByPhone(user.getPhone())).thenReturn(user);
 
-        // When
         UserEntity foundUser = userService.getUserByPhone(user.getPhone());
 
         // Then
@@ -215,9 +206,10 @@ public class UserServiceTest {
         // Given
         List<UserEntity> users = new ArrayList<>();
         users.add(user);
-        when(userRepository.findByName(user.getName())).thenReturn(users);
 
         // When
+        when(userRepository.findByName(user.getName())).thenReturn(users);
+
         List<UserEntity> foundUsers = userService.getUserByName(user.getName());
 
         // Then
@@ -229,9 +221,9 @@ public class UserServiceTest {
         // Given
         List<UserEntity> users = new ArrayList<>();
         users.add(user);
-        when(userRepository.findAll()).thenReturn(users);
 
         // When
+        when(userRepository.findAll()).thenReturn(users);
         List<UserEntity> foundUsers = userService.getAllUsers();
 
         // Then
@@ -242,9 +234,10 @@ public class UserServiceTest {
     void whenUpdateUser_thenSuccess() {
         // Given
         user.setName("Martin Updated");
-        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
 
         // When
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+
         UserEntity updatedUser = userService.updateUser(user);
 
         // Then
@@ -264,10 +257,9 @@ public class UserServiceTest {
 
     @Test
     void whenDeleteNonExistentUser_thenThrowException() {
-        // Given
+        // When
         doThrow(new RuntimeException("User not found")).when(userRepository).deleteById(user.getId());
 
-        // When
         Exception exception = assertThrows(Exception.class, () -> {
             userService.deleteUser(user.getId());
         });
@@ -279,8 +271,12 @@ public class UserServiceTest {
 
     @Test
     void whenLoginWithNullEmail_thenReturnZero() {
+        // Given
+        String email = null;
+        String password = user.getPassword();
+
         // When
-        Long userId = userService.login(null, user.getPassword());
+        Long userId = userService.login(email, password);
 
         // Then
         assertThat(userId).isEqualTo(0L);
@@ -288,11 +284,14 @@ public class UserServiceTest {
 
     @Test
     void whenLoginWithNullPassword_thenReturnZero() {
-        // Given
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
+        //Given
+        String email = user.getEmail();
+        String password = null;
 
         // When
-        Long userId = userService.login(user.getEmail(), null);
+        when(userRepository.findByEmail(email)).thenReturn(user);
+
+        Long userId = userService.login(email, password);
 
         // Then
         assertThat(userId).isEqualTo(0L);
@@ -324,101 +323,74 @@ public class UserServiceTest {
 
     @Test
     void whenUserWithSameEmailOrRutExists_thenReturnNull() {
-        // Dado
+        // Given
         UserEntity newUser = new UserEntity();
         newUser.setEmail("existing@example.com");
         newUser.setRut("12345678-9");
-
-        // Simular que ya existe un usuario con el mismo email
         UserEntity existingUserByEmail = new UserEntity();
         existingUserByEmail.setEmail("existing@example.com");
+
+        // When
         when(userRepository.findByEmail(newUser.getEmail())).thenReturn(existingUserByEmail);
-
-        // Simular que no existe un usuario con el mismo rut
         when(userRepository.findByRut(newUser.getRut())).thenReturn(null);
-
-        // Cuando
         UserEntity result = userService.saveUser(newUser);
 
-        // Entonces
-        assertThat(result).isNull(); // Verifica que el resultado sea null
+        // Then
+        assertThat(result).isNull();
     }
 
     @Test
     void whenUserWithSameRutExists_thenReturnNull() {
-        // Dado
+        // Given
         UserEntity newUser = new UserEntity();
         newUser.setEmail("newuser@example.com");
-        newUser.setRut("existingRut"); // Suponiendo que este RUT ya existe
-
-        // Simular que no existe un usuario con el mismo email
-        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(null);
-
-        // Simular que ya existe un usuario con el mismo RUT
+        newUser.setRut("existingRut");
         UserEntity existingUserByRut = new UserEntity();
         existingUserByRut.setRut("existingRut");
-        when(userRepository.findByRut(newUser.getRut())).thenReturn(existingUserByRut);
 
-        // Cuando
+        // When
+        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(null);
+        when(userRepository.findByRut(newUser.getRut())).thenReturn(existingUserByRut);
         UserEntity result = userService.saveUser(newUser);
 
-        // Entonces
-        assertThat(result).isNull(); // Verifica que el resultado sea null
+        // Then
+        assertThat(result).isNull();
     }
-
-    /*@Test
-    void whenUserNotFound_thenReturnZero() {
-        // Simular que no se encuentra el usuario
-        Long userId = 1L;
-        UserEntity mockUser = null; // Simulamos que no hay usuario
-
-        // Configurar el mock para que devuelva null
-        when(userRepository.findById(userId)).thenReturn(mockUser); // Retorna UserEntity como null
-
-        // Ejecutar el método
-        Integer age = userService.userAge(userId);
-
-        // Verificar que se devuelve 0
-        assertEquals(0, age);
-    }*/
 
     @Test
     void whenUserExistsButBirthdayNotYetThisYear_thenReturnCorrectAge() {
-        // Simular que se encuentra el usuario
+        // Given
         Long userId = 1L;
         UserEntity user = new UserEntity();
         user.setBirthdate(Date.from(LocalDate.of(2000, 12, 31).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
+        //When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        // Ejecutar el método
         Integer age = userService.userAge(userId);
 
-        // Obtener la fecha actual para calcular la edad
         LocalDate currentLocalDate = LocalDate.now();
         Integer expectedAge = currentLocalDate.getYear() - 2000 - 1; // Ajustar por el cumpleaños no pasado
 
-        // Verificar que la edad devuelta sea la esperada
+        // Then
         assertEquals(expectedAge, age);
     }
 
     @Test
     void whenUserExistsAndBirthdayHasPassedThisYear_thenReturnCorrectAge() {
-        // Simular que se encuentra el usuario
+        // Given
         Long userId = 2L;
         UserEntity user = new UserEntity();
         user.setBirthdate(Date.from(LocalDate.of(2000, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
+        // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        // Ejecutar el método
         Integer age = userService.userAge(userId);
 
-        // Obtener la fecha actual para calcular la edad
         LocalDate currentLocalDate = LocalDate.now();
         Integer expectedAge = currentLocalDate.getYear() - 2000; // No se necesita ajuste
 
-        // Verificar que la edad devuelta sea la esperada
+        // Then
         assertEquals(expectedAge, age);
     }
 
@@ -430,6 +402,8 @@ public class UserServiceTest {
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         Integer age = userService.userAge(userId);
+
+        //Then
         assertThat(age).isEqualTo(0);
     }
 }

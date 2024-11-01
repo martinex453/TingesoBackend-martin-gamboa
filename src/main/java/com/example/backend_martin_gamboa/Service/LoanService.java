@@ -1,6 +1,5 @@
 package com.example.backend_martin_gamboa.Service;
 
-import com.example.backend_martin_gamboa.Entity.DocumentEntity;
 import com.example.backend_martin_gamboa.Entity.LoanEntity;
 import com.example.backend_martin_gamboa.Repository.LoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +82,6 @@ public class LoanService {
         Double totalMonthPayments = monthPayment + deductionSure + fireSure;
         Double totalPayments = (double) Math.round(totalMonthPayments) * payments + adminFee;
         totalPayments = (double) Math.round(totalPayments);
-        System.out.println(totalPayments);
         return totalPayments;
     }
 
@@ -98,7 +96,6 @@ public class LoanService {
                 (Math.pow(1 + monthInterest, payments) - 1);
         Double deductionSure = capital * 0.0003;
         Double fireSure = 20000.0;
-        Double adminFee = capital * 0.01;
         Double totalMonthPayments = monthPayment + deductionSure + fireSure;
         totalMonthPayments = (double) Math.round(totalMonthPayments);
         return totalMonthPayments;
