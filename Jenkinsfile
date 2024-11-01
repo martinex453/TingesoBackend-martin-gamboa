@@ -11,7 +11,7 @@ pipeline {
             steps {
                 checkout scmGit(branches: [[name: "*/main"]],
                     extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/martinex453/TingesoBackend.git']])
+                    userRemoteConfigs: [[url: 'https://github.com/martinex453/TingesoBackend-martin-gamboa.git']])
                 bat 'dir'
                 bat 'mvn clean package'
             }
