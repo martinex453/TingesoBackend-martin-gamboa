@@ -151,7 +151,7 @@ public class UserServiceTest {
         Integer age = userService.userAge(user.getId());
 
         // Then
-        assertThat(age).isEqualTo(23); // Dependiendo de la fecha actual, ajustar si es necesario
+        assertThat(age).isEqualTo(24);
     }
 
     @Test
