@@ -74,8 +74,6 @@ public class UserService {
         LocalDate currentLocalDate = LocalDate.now();
 
         Integer age = currentLocalDate.getYear() - birthLocalDate.getYear();
-
-        // Ajustar si el cumpleaños no ha pasado este año
         if (currentLocalDate.getDayOfYear() < birthLocalDate.getDayOfYear()) {
             age--;
         }

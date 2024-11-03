@@ -190,7 +190,7 @@ public class LoanService {
             default:
                 return false;
         }
-        return maxCapital >= loan.getCapital();
+        return maxCapital >= capital;
     }
 
     public List<LoanEntity> getLoansForEvaluate(){
@@ -200,7 +200,7 @@ public class LoanService {
         while (iterator.hasNext()) {
             LoanEntity loan = iterator.next();
             if (loan.getStatus() == 2 || loan.getStatus() == 7 || loan.getStatus() == 8) {
-                iterator.remove(); // Elimina de forma segura
+                iterator.remove();
             }
         }
         return loans;

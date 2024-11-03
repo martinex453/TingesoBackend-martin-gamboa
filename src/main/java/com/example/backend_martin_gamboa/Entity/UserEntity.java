@@ -26,7 +26,7 @@ public class UserEntity {
     private Date birthdate;
     private String email;
     private String phone;
-    private String address; // is necesary?
+    private String address;
     private Integer usertype; //Customer 1 or executive 2
 
 }
